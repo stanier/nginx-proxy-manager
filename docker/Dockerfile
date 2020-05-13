@@ -3,7 +3,7 @@
 
 # This file assumes that the frontend has been built using ./scripts/frontend-build
 
-FROM --platform=linux/amd64 jc21/alpine-nginx-full:node
+FROM jc21/alpine-nginx-full:node
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
