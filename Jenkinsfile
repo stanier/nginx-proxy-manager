@@ -1,6 +1,6 @@
 pipeline {
 	agent {
-		label 'docker-multiarch'
+		label 'docker'
 	}
 	options {
 		buildDiscarder(logRotator(numToKeepStr: '5'))
