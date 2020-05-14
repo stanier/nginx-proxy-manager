@@ -207,19 +207,19 @@ pipeline {
 			sh 'echo Reverting ownership'
 			sh 'docker run --rm -v $(pwd):/data ${DOCKER_CI_TOOLS} chown -R $(id -u):$(id -g) /data'
 		}
-		//success {
+		success {
 			//juxtapose event: 'success'
-			//sh 'figlet "SUCCESS"'
-		//}
+			sh 'figlet "SUCCESS"'
+		}
 		failure {
 			archiveArtifacts(artifacts: 'debug/**.*', allowEmptyArchive: true)
 			//juxtapose event: 'failure'
-			//sh 'figlet "FAILURE"'
+			sh 'figlet "FAILURE"'
 		}
 		unstable {
 			archiveArtifacts(artifacts: 'debug/**.*', allowEmptyArchive: true)
 			//juxtapose event: 'unstable'
-			//sh 'figlet "UNSTABLE"'
+			sh 'figlet "UNSTABLE"'
 		}
 	}
 }
