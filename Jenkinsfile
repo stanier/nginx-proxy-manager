@@ -38,7 +38,7 @@ pipeline {
 					steps {
 						script {
 							// Defaults to the Branch name, which is applies to all branches AND pr's
-							env.BUILDX_PUSH_TAGS = "-t docker.io/jc21/${IMAGE}:github-${BRANCH_LOWER}"
+							env.BUILDX_PUSH_TAGS = "-t docker.io/stanier/${IMAGE}:github-${BRANCH_LOWER}"
 						}
 					}
 				}

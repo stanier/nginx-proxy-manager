@@ -10,6 +10,7 @@ RESET='\E[0m'
 
 DOCKER_IMAGE=jc21/alpine-nginx-full:node
 
+echo "Frontend build launched"
 # Ensure docker exists
 if hash docker 2>/dev/null; then
 	cd "${DIR}/.."
