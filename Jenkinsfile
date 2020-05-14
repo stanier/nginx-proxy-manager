@@ -208,18 +208,18 @@ pipeline {
 			sh 'docker run --rm -v $(pwd):/data ${DOCKER_CI_TOOLS} chown -R $(id -u):$(id -g) /data'
 		}
 		success {
-			juxtapose event: 'success'
-			sh 'figlet "SUCCESS"'
+			//juxtapose event: 'success'
+			//sh 'figlet "SUCCESS"'
 		}
 		failure {
 			archiveArtifacts(artifacts: 'debug/**.*', allowEmptyArchive: true)
-			juxtapose event: 'failure'
-			sh 'figlet "FAILURE"'
+			//juxtapose event: 'failure'
+			//sh 'figlet "FAILURE"'
 		}
 		unstable {
 			archiveArtifacts(artifacts: 'debug/**.*', allowEmptyArchive: true)
-			juxtapose event: 'unstable'
-			sh 'figlet "UNSTABLE"'
+			//juxtapose event: 'unstable'
+			//sh 'figlet "UNSTABLE"'
 		}
 	}
 }
