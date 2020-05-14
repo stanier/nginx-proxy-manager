@@ -25,7 +25,7 @@ pipeline {
 					}
 					steps {
 						script {
-							env.BUILDX_PUSH_TAGS = "-t docker.io/jc21/${IMAGE}:${BUILD_VERSION} -t docker.io/jc21/${IMAGE}:${MAJOR_VERSION} -t docker.io/jc21/${IMAGE}:latest"
+							env.BUILDX_PUSH_TAGS = "-t docker.io/stanier/${IMAGE}:${BUILD_VERSION} -t docker.io/jc21/${IMAGE}:${MAJOR_VERSION} -t docker.io/jc21/${IMAGE}:latest"
 						}
 					}
 				}
@@ -114,27 +114,27 @@ pipeline {
 				}
 			}
 		}
-		stage('Docs') {
-			when {
-				not {
-					equals expected: 'UNSTABLE', actual: currentBuild.result
-				}
-			}
-			steps {
-				ansiColor('xterm') {
-					dir(path: 'docs') {
-						sh 'yarn install'
-						sh 'yarn build'
-					}
-
-					dir(path: 'docs/.vuepress/dist') {
-						sh 'tar -czf ../../docs.tgz *'
-					}
-
-					archiveArtifacts(artifacts: 'docs/docs.tgz', allowEmptyArchive: false)
-				}
-			}
-		}
+//		stage('Docs') {
+//			when {
+//				not {
+//					equals expected: 'UNSTABLE', actual: currentBuild.result
+//				}
+//			}
+//			steps {
+//				ansiColor('xterm') {
+//					dir(path: 'docs') {
+//						sh 'yarn install'
+//						sh 'yarn build'
+//					}
+//
+//					dir(path: 'docs/.vuepress/dist') {
+//						sh 'tar -czf ../../docs.tgz *'
+//					}
+//
+//					archiveArtifacts(artifacts: 'docs/docs.tgz', allowEmptyArchive: false)
+//				}
+//			}
+//		}
 		stage('MultiArch Build') {
 			when {
 				not {
@@ -143,7 +143,7 @@ pipeline {
 			}
 			steps {
 				ansiColor('xterm') {
-					withCredentials([usernamePassword(credentialsId: 'jc21-dockerhub', passwordVariable: 'dpass', usernameVariable: 'duser')]) {
+					withCredentials([usernamePassword(credentialsId: 'stanier-dockerhub', passwordVariable: 'dpass', usernameVariable: 'duser')]) {
 						sh "docker login -u '${duser}' -p '${dpass}'"
 						// Buildx with push
 						sh "./scripts/buildx --push ${BUILDX_PUSH_TAGS}"
@@ -151,38 +151,38 @@ pipeline {
 				}
 			}
 		}
-		stage('Docs Deploy') {
-			when {
-				allOf {
-					branch 'master'
-					not {
-						equals expected: 'UNSTABLE', actual: currentBuild.result
-					}
-				}
-			}
-			steps {
-				withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'npm-s3-docs', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-					sh """docker run --rm \\
-						--name \${COMPOSE_PROJECT_NAME}-docs-upload \\
-						-e S3_BUCKET=jc21-npm-site \\
-						-e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \\
-						-e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \\
-						-v \$(pwd):/app \\
-						-w /app \\
-						jc21/ci-tools \\
-						scripts/docs-upload /app/docs/.vuepress/dist/
-					"""
-
-					sh """docker run --rm \\
-						--name \${COMPOSE_PROJECT_NAME}-docs-invalidate \\
-						-e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \\
-						-e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \\
-						jc21/ci-tools \\
-						aws cloudfront create-invalidation --distribution-id EN1G6DEWZUTDT --paths '/*'
-					"""
-				}
-			}
-		}
+//		stage('Docs Deploy') {
+//			when {
+//				allOf {
+//					branch 'master'
+//					not {
+//						equals expected: 'UNSTABLE', actual: currentBuild.result
+//					}
+//				}
+//			}
+//			steps {
+//				withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'npm-s3-docs', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+//					sh """docker run --rm \\
+//						--name \${COMPOSE_PROJECT_NAME}-docs-upload \\
+//						-e S3_BUCKET=jc21-npm-site \\
+//						-e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \\
+//						-e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \\
+//						-v \$(pwd):/app \\
+//						-w /app \\
+//						jc21/ci-tools \\
+//						scripts/docs-upload /app/docs/.vuepress/dist/
+//					"""
+//
+//					sh """docker run --rm \\
+//						--name \${COMPOSE_PROJECT_NAME}-docs-invalidate \\
+//						-e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \\
+//						-e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \\
+//						jc21/ci-tools \\
+//						aws cloudfront create-invalidation --distribution-id EN1G6DEWZUTDT --paths '/*'
+//					"""
+//				}
+//			}
+//		}
 		stage('PR Comment') {
 			when {
 				allOf {
