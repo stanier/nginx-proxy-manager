@@ -25,7 +25,7 @@ pipeline {
 					}
 					steps {
 						script {
-							env.BUILDX_PUSH_TAGS = "-t docker.io/stanier/${IMAGE}:${BUILD_VERSION} -t docker.io/jc21/${IMAGE}:${MAJOR_VERSION} -t docker.io/jc21/${IMAGE}:latest"
+							env.BUILDX_PUSH_TAGS = "-t docker.io/stanier/${IMAGE}:${BUILD_VERSION} -t docker.io/stanier/${IMAGE}:${MAJOR_VERSION} -t docker.io/stanier/${IMAGE}:latest"
 						}
 					}
 				}
@@ -65,7 +65,7 @@ pipeline {
 				ansiColor('xterm') {
 					echo 'Checking Syntax ...'
 					// See: https://github.com/yarnpkg/yarn/issues/3254
-					sh '''docker run --rm \\
+					sh '''sudo docker run --rm \\
 						-v "$(pwd)/backend:/app" \\
 						-w /app \\
 						node:latest \\
@@ -73,7 +73,7 @@ pipeline {
 					'''
 
 					echo 'Docker Build ...'
-					sh '''docker build --pull --no-cache --squash --compress \\
+					sh '''sudo docker build --pull --no-cache --squash --compress \\
 						-t "${IMAGE}:ci-${BUILD_NUMBER}" \\
 						-f docker/Dockerfile \\
 						--build-arg TARGETPLATFORM=linux/amd64 \\
@@ -97,7 +97,7 @@ pipeline {
 					sh 'rm -rf test/results'
 					sh 'docker-compose up cypress'
 					// Get results
-					sh 'docker cp -L "$(docker-compose ps -q cypress):/results" test/'
+					sh 'sudo docker cp -L "$(docker-compose ps -q cypress):/results" test/'
 				}
 			}
 			post {
@@ -203,9 +203,9 @@ pipeline {
 	}
 	post {
 		always {
-			sh 'docker-compose down --rmi all --remove-orphans --volumes -t 30'
+			sh 'sudo docker-compose down --rmi all --remove-orphans --volumes -t 30'
 			sh 'echo Reverting ownership'
-			sh 'docker run --rm -v $(pwd):/data ${DOCKER_CI_TOOLS} chown -R $(id -u):$(id -g) /data'
+			sh 'sudo docker run --rm -v $(pwd):/data ${DOCKER_CI_TOOLS} chown -R $(id -u):$(id -g) /data'
 		}
 		//success {
 			//juxtapose event: 'success'
