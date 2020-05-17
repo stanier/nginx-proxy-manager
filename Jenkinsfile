@@ -65,7 +65,7 @@ pipeline {
 				ansiColor('xterm') {
 					echo 'Checking Syntax ...'
 					// See: https://github.com/yarnpkg/yarn/issues/3254
-					sh '''sudo docker run --rm \\
+					sh '''docker run --rm \\
 						-v "$(pwd)/backend:/app" \\
 						-w /app \\
 						node:latest \\
