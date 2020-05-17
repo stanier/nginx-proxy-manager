@@ -56,7 +56,7 @@ pipeline {
 		stage('Frontend') {
 			steps {
 				ansiColor('xterm') {
-					sh 'sudo ./scripts/frontend-build'
+					sh './scripts/frontend-build'
 				}
 			}
 		}
