@@ -15,6 +15,7 @@ pipeline {
 		COMPOSE_FILE               = 'docker/docker-compose.ci.yml'
 		COMPOSE_INTERACTIVE_NO_CLI = 1
 		BUILDX_NAME                = "${COMPOSE_PROJECT_NAME}"
+		DOCKER_CI_TOOLS			   = "jc21/ci-tools"
 	}
 	stages {
 		stage('Environment') {
