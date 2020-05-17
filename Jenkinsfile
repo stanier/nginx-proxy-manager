@@ -65,7 +65,7 @@ pipeline {
 				ansiColor('xterm') {
 					echo 'Checking Syntax ...'
 					// See: https://github.com/yarnpkg/yarn/issues/3254
-					sh '''docker run --rm \\
+					sh '''sudo docker run --rm \\
 						-v "$(pwd)/backend:/app" \\
 						-w /app \\
 						node:latest \\
@@ -73,7 +73,7 @@ pipeline {
 					'''
 
 					echo 'Docker Build ...'
-					sh '''docker build --pull --no-cache --squash --compress \\
+					sh '''sudo docker build --pull --no-cache --squash --compress \\
 						-t "${IMAGE}:ci-${BUILD_NUMBER}" \\
 						-f docker/Dockerfile \\
 						--build-arg TARGETPLATFORM=linux/amd64 \\
@@ -90,22 +90,22 @@ pipeline {
 			steps {
 				ansiColor('xterm') {
 					// Bring up a stack
-					sh 'docker-compose up -d fullstack'
-					sh './scripts/wait-healthy $(docker-compose ps -q fullstack) 120'
+					sh 'sudo docker-compose up -d fullstack'
+					sh './scripts/wait-healthy $(sudo docker-compose ps -q fullstack) 120'
 
 					// Run tests
 					sh 'rm -rf test/results'
-					sh 'docker-compose up cypress'
+					sh 'sudo docker-compose up cypress'
 					// Get results
-					sh 'docker cp -L "$(docker-compose ps -q cypress):/results" test/'
+					sh 'sudo docker cp -L "$(docker-compose ps -q cypress):/results" test/'
 				}
 			}
 			post {
 				always {
 					// Dumps to analyze later
 					sh 'mkdir -p debug'
-					sh 'docker-compose logs fullstack | gzip > debug/docker_fullstack.log.gz'
-					sh 'docker-compose logs db | gzip > debug/docker_db.log.gz'
+					sh 'sudo docker-compose logs fullstack | gzip > debug/docker_fullstack.log.gz'
+					sh 'sudo docker-compose logs db | gzip > debug/docker_db.log.gz'
 					// Cypress videos and screenshot artifacts
 					dir(path: 'test/results') {
 						archiveArtifacts allowEmptyArchive: true, artifacts: '**/*', excludes: '**/*.xml'
@@ -203,9 +203,9 @@ pipeline {
 	}
 	post {
 		always {
-			sh 'sudo docker-compose down --rmi all --remove-orphans --volumes -t 30'
+			sh 'docker-compose down --rmi all --remove-orphans --volumes -t 30'
 			sh 'echo Reverting ownership'
-			sh 'sudo docker run --rm -v $(pwd):/data ${DOCKER_CI_TOOLS} chown -R $(id -u):$(id -g) /data'
+			sh ' docker run --rm -v $(pwd):/data ${DOCKER_CI_TOOLS} chown -R $(id -u):$(id -g) /data'
 		}
 		//success {
 			//juxtapose event: 'success'
