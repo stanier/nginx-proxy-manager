@@ -65,7 +65,7 @@ pipeline {
 				ansiColor('xterm') {
 					echo 'Checking Syntax ...'
 					// See: https://github.com/yarnpkg/yarn/issues/3254
-					sh '''docker run --rm \\
+					sh '''sudo docker run --rm \\
 						-v "$(pwd)/backend:/app" \\
 						-w /app \\
 						node:latest \\
@@ -73,7 +73,7 @@ pipeline {
 					'''
 
 					echo 'Docker Build ...'
-					sh '''docker build --pull --no-cache --squash --compress \\
+					sh '''sudo docker build --pull --no-cache --squash --compress \\
 						-t "${IMAGE}:ci-${BUILD_NUMBER}" \\
 						-f docker/Dockerfile \\
 						--build-arg TARGETPLATFORM=linux/amd64 \\
@@ -205,7 +205,7 @@ pipeline {
 		always {
 			sh 'docker-compose down --rmi all --remove-orphans --volumes -t 30'
 			sh 'echo Reverting ownership'
-			sh ' docker run --rm -v $(pwd):/data ${DOCKER_CI_TOOLS} chown -R $(id -u):$(id -g) /data'
+			sh 'docker run --rm -v $(pwd):/data ${DOCKER_CI_TOOLS} chown -R $(id -u):$(id -g) /data'
 		}
 		//success {
 			//juxtapose event: 'success'
