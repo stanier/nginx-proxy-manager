@@ -43,6 +43,7 @@ const internalCertificate = {
 			let cmd = certbot_command + ' renew --non-interactive --quiet ' +
 				'--config "' + le_config + '" ' +
 				'--preferred-challenges "dns,http" ' +
+				'--dns-cloudflare-credentials "/data/cloudflare.ini" ' +
 				'--disable-hook-validation ' +
 				(le_staging ? '--staging' : '');
 
@@ -734,6 +735,7 @@ const internalCertificate = {
 			'--email "' + certificate.meta.letsencrypt_email + '" ' +
 			'--preferred-challenges "dns,http" ' +
 			'--domains "' + certificate.domain_names.join(',') + '" ' +
+			'--dns-cloudflare-credentials "/data/cloudflare.ini" ' +
 			(le_staging ? '--staging' : '');
 
 		if (debug_mode) {
@@ -801,6 +803,7 @@ const internalCertificate = {
 			'--cert-name "npm-' + certificate.id + '" ' +
 			'--preferred-challenges "dns,http" ' +
 			'--disable-hook-validation ' +
+			'--dns-cloudflare-credentials "/data/cloudflare.ini" ' +
 			(le_staging ? '--staging' : '');
 
 		if (debug_mode) {

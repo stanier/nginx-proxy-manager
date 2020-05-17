@@ -196,7 +196,7 @@ pipeline {
 			steps {
 				ansiColor('xterm') {
 					script {
-						def comment = pullRequest.comment("Docker Image for build ${BUILD_NUMBER} is available on [DockerHub](https://cloud.docker.com/repository/docker/jc21/${IMAGE}) as `jc21/${IMAGE}:github-${BRANCH_LOWER}`")
+						def comment = pullRequest.comment("Docker Image for build ${BUILD_NUMBER} is available on [DockerHub](https://cloud.docker.com/repository/docker/stanier/${IMAGE}) as `stanier/${IMAGE}:github-${BRANCH_LOWER}`")
 					}
 				}
 			}
