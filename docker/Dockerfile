@@ -18,7 +18,7 @@ ENV NODE_ENV=production
 RUN echo "fs.file-max = 65535" > /etc/sysctl.conf \
 	&& rm -rf /etc/nginx \
 	&& apk update \
-	&& apk add python2 certbot jq \
+	&& apk add python2 certbot jq certbot-dns-cloudflare acme=1.4.0 \
 	&& rm -rf /var/cache/apk/*
 
 ENV NPM_BUILD_VERSION="${BUILD_VERSION}" NPM_BUILD_COMMIT="${BUILD_COMMIT}" NPM_BUILD_DATE="${BUILD_DATE}"
