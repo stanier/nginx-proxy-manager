@@ -56,7 +56,7 @@ pipeline {
 		stage('Frontend') {
 			steps {
 				ansiColor('xterm') {
-					sh 'sudo ./scripts/frontend-build'
+					sh './scripts/frontend-build'
 				}
 			}
 		}
@@ -65,7 +65,7 @@ pipeline {
 				ansiColor('xterm') {
 					echo 'Checking Syntax ...'
 					// See: https://github.com/yarnpkg/yarn/issues/3254
-					sh '''sudo docker run --rm \\
+					sh '''docker run --rm \\
 						-v "$(pwd)/backend:/app" \\
 						-w /app \\
 						node:latest \\
@@ -73,7 +73,7 @@ pipeline {
 					'''
 
 					echo 'Docker Build ...'
-					sh '''sudo docker build --pull --no-cache --squash --compress \\
+					sh '''docker build --pull --no-cache --squash --compress \\
 						-t "${IMAGE}:ci-${BUILD_NUMBER}" \\
 						-f docker/Dockerfile \\
 						--build-arg TARGETPLATFORM=linux/amd64 \\
