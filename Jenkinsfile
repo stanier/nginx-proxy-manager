@@ -187,7 +187,7 @@ pipeline {
 		}
 	}
 }
-
+}
 def getVersion() {
 	ver = sh(script: 'cat .version', returnStdout: true)
 	return ver.trim()
@@ -196,5 +196,4 @@ def getVersion() {
 def getCommit() {
 	ver = sh(script: 'git log -n 1 --format=%h', returnStdout: true)
 	return ver.trim()
-}
 }
