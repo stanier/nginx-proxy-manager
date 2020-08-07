@@ -197,3 +197,4 @@ def getCommit() {
 	ver = sh(script: 'git log -n 1 --format=%h', returnStdout: true)
 	return ver.trim()
 }
+}
