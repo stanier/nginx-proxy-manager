@@ -149,19 +149,19 @@ pipeline {
 					}
 				}
 			}
-			stage('PR Comment') {
-				when {
-					allOf {
-						changeRequest()
-						not {
-							equals expected: 'UNSTABLE', actual: currentBuild.result
-						}
+		}
+		stage('PR Comment') {
+			when {
+				allOf {
+					changeRequest()
+					not {
+						equals expected: 'UNSTABLE', actual: currentBuild.result
 					}
 				}
-				steps {
-					script {
-						def comment = pullRequest.comment("Docker Image for build ${BUILD_NUMBER} is available on [DockerHub](https://cloud.docker.com/repository/docker/jc21/${IMAGE}) as `jc21/${IMAGE}:github-${BRANCH_LOWER}`")
-					}
+			}
+			steps {
+				script {
+					def comment = pullRequest.comment("Docker Image for build ${BUILD_NUMBER} is available on [DockerHub](https://cloud.docker.com/repository/docker/jc21/${IMAGE}) as `jc21/${IMAGE}:github-${BRANCH_LOWER}`")
 				}
 			}
 		}
