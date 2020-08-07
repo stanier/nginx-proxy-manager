@@ -170,16 +170,16 @@ pipeline {
 			//juxtapose event: 'success'
 			//sh 'figlet "SUCCESS"'
 		//}
-		failure {
-			archiveArtifacts(artifacts: 'debug/**.*', allowEmptyArchive: true)
+		//failure {
+			//archiveArtifacts(artifacts: 'debug/**.*', allowEmptyArchive: true)
 			//juxtapose event: 'failure'
 			//sh 'figlet "FAILURE"'
-		}
-		unstable {
-			archiveArtifacts(artifacts: 'debug/**.*', allowEmptyArchive: true)
+		//}
+		//unstable {
+			//archiveArtifacts(artifacts: 'debug/**.*', allowEmptyArchive: true)
 			//juxtapose event: 'unstable'
 			//sh 'figlet "UNSTABLE"'
-		}
+		//}
 	}
 }
 def getVersion() {
