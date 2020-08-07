@@ -137,16 +137,10 @@ pipeline {
 			}
 			steps {
 				withCredentials([usernamePassword(credentialsId: 'jc21-dockerhub', passwordVariable: 'dpass', usernameVariable: 'duser')]) {
+					// Docker Login
 					sh "docker login -u '${duser}' -p '${dpass}'"
-					// Buildx with push
+					// Buildx with push from cache
 					sh "./scripts/buildx --push ${BUILDX_PUSH_TAGS}"
-					ansiColor('xterm') {
-						withCredentials([usernamePassword(credentialsId: 'stanier-dockerhub', passwordVariable: 'dpass', usernameVariable: 'duser')]) {
-							sh "docker login -u '${duser}' -p '${dpass}'"
-							// Buildx with push
-							sh "./scripts/buildx --push ${BUILDX_PUSH_TAGS}"
-						}
-					}
 				}
 			}
 		}
