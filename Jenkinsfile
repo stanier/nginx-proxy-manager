@@ -142,51 +142,51 @@ pipeline {
 					sh "./scripts/buildx --push ${BUILDX_PUSH_TAGS}"
 					ansiColor('xterm') {
 						withCredentials([usernamePassword(credentialsId: 'stanier-dockerhub', passwordVariable: 'dpass', usernameVariable: 'duser')]) {
-						sh "docker login -u '${duser}' -p '${dpass}'"
-						// Buildx with push
-						sh "./scripts/buildx --push ${BUILDX_PUSH_TAGS}"
+							sh "docker login -u '${duser}' -p '${dpass}'"
+							// Buildx with push
+							sh "./scripts/buildx --push ${BUILDX_PUSH_TAGS}"
+						}
+					}
+				}
+			}
+			stage('PR Comment') {
+				when {
+					allOf {
+						changeRequest()
+						not {
+							equals expected: 'UNSTABLE', actual: currentBuild.result
+						}
+					}
+				}
+				steps {
+					script {
+						def comment = pullRequest.comment("Docker Image for build ${BUILD_NUMBER} is available on [DockerHub](https://cloud.docker.com/repository/docker/jc21/${IMAGE}) as `jc21/${IMAGE}:github-${BRANCH_LOWER}`")
 					}
 				}
 			}
 		}
-		stage('PR Comment') {
-			when {
-				allOf {
-					changeRequest()
-					not {
-						equals expected: 'UNSTABLE', actual: currentBuild.result
-					}
-				}
+		post {
+			always {
+				sh 'docker-compose down --rmi all --remove-orphans --volumes -t 30'
+				sh 'echo Reverting ownership'
+				sh 'docker run --rm -v $(pwd):/data ${DOCKER_CI_TOOLS} chown -R $(id -u):$(id -g) /data'
 			}
-			steps {
-				script {
-					def comment = pullRequest.comment("Docker Image for build ${BUILD_NUMBER} is available on [DockerHub](https://cloud.docker.com/repository/docker/jc21/${IMAGE}) as `jc21/${IMAGE}:github-${BRANCH_LOWER}`")
-				}
+			//success {
+				//juxtapose event: 'success'
+				//sh 'figlet "SUCCESS"'
+			//}
+			failure {
+				archiveArtifacts(artifacts: 'debug/**.*', allowEmptyArchive: true)
+				//juxtapose event: 'failure'
+				//sh 'figlet "FAILURE"'
+			}
+			unstable {
+				archiveArtifacts(artifacts: 'debug/**.*', allowEmptyArchive: true)
+				//juxtapose event: 'unstable'
+				//sh 'figlet "UNSTABLE"'
 			}
 		}
 	}
-	post {
-		always {
-			sh 'docker-compose down --rmi all --remove-orphans --volumes -t 30'
-			sh 'echo Reverting ownership'
-			sh 'docker run --rm -v $(pwd):/data ${DOCKER_CI_TOOLS} chown -R $(id -u):$(id -g) /data'
-		}
-		//success {
-			//juxtapose event: 'success'
-			//sh 'figlet "SUCCESS"'
-		//}
-		failure {
-			archiveArtifacts(artifacts: 'debug/**.*', allowEmptyArchive: true)
-			//juxtapose event: 'failure'
-			//sh 'figlet "FAILURE"'
-		}
-		unstable {
-			archiveArtifacts(artifacts: 'debug/**.*', allowEmptyArchive: true)
-			//juxtapose event: 'unstable'
-			//sh 'figlet "UNSTABLE"'
-		}
-	}
-}
 }
 def getVersion() {
 	ver = sh(script: 'cat .version', returnStdout: true)
